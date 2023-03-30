@@ -1,7 +1,8 @@
 const { mdLinks } = require('../index.js');
-const { pathExist } = require('../FS.js');
-const { pathAbsolut } = require('../FS.js');
-const { getExt } = require('../FS.js');
+const { pathExist } = require('../api.js');
+const { pathAbsolut } = require('../api.js');
+const { newPathAbsolut } = require('../api.js');
+const { getExt } = require('../api.js');
 
 
 describe('mdLinks', () => {
@@ -37,6 +38,17 @@ describe('pathAbsolut', () => {
   });
   it('should return false if the path doesnt absolut', () => {
     expect(pathAbsolut("./README.md") ).toEqual(false);
+  });
+  
+});
+
+describe('newPathAbsolut', () => {
+
+  it('should return a function', () => {
+    expect(typeof newPathAbsolut).toEqual("function");
+  });
+  it('should return a relative path like absolut path', () => {
+    expect(newPathAbsolut("./README.md") ).toEqual("C:\\Users\\LABORATORIA\\Desktop\\DEV003-md-links\\README.md");
   });
   
 });

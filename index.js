@@ -1,6 +1,6 @@
-const { pathExist } = require('./FS.js');
-const { pathAbsolut } = require('./FS.js');
-const { newPathAbsolut } = require('./FS.js');
+const { pathExist } = require('./api.js');
+const { pathAbsolut } = require('./api.js');
+const { newPathAbsolut } = require('./api.js');
 
 
 
@@ -15,9 +15,9 @@ const mdLinks = (path, options) => {
       if(pathAbsolut(path) === true){
         pathAbsolute = path;
       }else{
-        //pathAbsolute = newPathAbsolut(path);
+        pathAbsolute = newPathAbsolut(path);
       }
-      // resolve(pathAbsolute);
+      // resolve(´${pathAbsolute}´);
       //La ruta es un directorio o archivo
       //si es directorio validar si existen archivos .md devolver un arreglo con los datos
       //si es directorio validar si no existen archivos .md devolver un arreglo vacio y cancelar promesa
