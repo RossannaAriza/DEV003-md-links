@@ -4,6 +4,8 @@ const path = require('path');
 
 const ruta = "/Users/LABORATORIA/Desktop/DEV003-md-links/README.md";
 const rutaRelativa = "./README.md";
+const rutaDirectorio = "./";
+
 
 //validar si el path existe
 const pathExist = (route) => fs.existsSync(route);
@@ -22,26 +24,48 @@ console.log(newPathAbsolut(rutaRelativa));
 const pathIsFile = (route) => fs.statSync(route).isFile();
 console.log(pathIsFile(ruta));
 
-//validar si es un directorio
-// const pathDirectory = (URL) => fs.statSync(URL);
-// fs.readdir("./", (error, archivos) => {
-//     archivos.forEach(archivo => {
-//         console.log(archivo);
-//     });
-// });
+// validar si es un directorio
+const pathIsDirectory = (route) => fs.lstatSync(route).isDirectory()
+console.log(pathIsDirectory(rutaDirectorio));
+console.log(pathIsDirectory(ruta));
+
+
+//--------------------------------------------------------------
+//Leer un directorio y extraer archivos .md
+// const getFileMd = (directoryRoute) => {
+//    return new Promise((resolve, rejects) => {
+//     fs.readdir(directoryRoute, (error, archivos) => {
+//        if(archivos) {
+//         archivos.forEach(archivo => {
+//             resolve(archivo);  
+//             console.log(archivo);
+//             const mdFile = archivo.filter(archivo =>
+//                getExt(archivo) === ".md"); 
+//        })
+//        resolve(mdFile);
+//        console.log(mdFile);
+//     }else {
+//         rejects(`Error: ${error}`);
+//        }
+//      });
+//     })
+// };
+//     console.log(getFileMd(rutaDirectorio));
+//---------------------------------------------------------------------
 
 //Obtener el formato del archivo
 const getExt = (route) => path.extname(route);
 console.log(getExt(ruta));
+const extPathMd = getExt(ruta);
 
 //validar si es un archivo .md
-const pathIsMd = (route) => path.extname(route) === ".md";
-console.log(pathIsMd(ruta));
+const pathIsMd = (extRoute) => extRoute === ".md";
+console.log(pathIsMd(extPathMd));
 
 //Extraer links de un archivo
 const getLinks = (route) => {
     return new Promise((resolve, rejects) =>{
-        //leerlo y buscar links, extraer y hacer peticiones http
+        //leerlo y buscar links y extraer
         fs.readFile(route, "utf-8", (error, data) => {
             if(data){
                 const link = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
@@ -64,7 +88,12 @@ const getLinks = (route) => {
 }
 console.log(getLinks(ruta));
 
-
+// valida links en array (muestra status), hacer peticiones (axios)
+// const validateLinks = (allURL) => {
+//retornar una promesa con unn arreglo de objeto para cada link
+//si es true href, text, file, status, ok
+//si es false href, text, file
+//}
 
 module.exports = {
      pathExist,
@@ -72,5 +101,6 @@ module.exports = {
      newPathAbsolut,
      getExt,
      pathIsMd,
+     pathIsDirectory,
      getLinks
  };

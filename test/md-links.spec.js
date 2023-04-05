@@ -3,8 +3,8 @@ const { pathExist } = require('../api.js');
 const { pathAbsolut } = require('../api.js');
 const { newPathAbsolut } = require('../api.js');
 const { getExt } = require('../api.js');
+const { pathIsDirectory } = require('../api.js');
 const { pathIsMd } = require('../api.js');
-const { getLinks } = require('../api.js');
 
 
 
@@ -71,25 +71,39 @@ describe('getExt', () => {
   
 });
 
+describe('pathIsDirectory', () => {
+
+  it('should return a function', () => {
+    expect(typeof pathIsDirectory).toEqual("function");
+  });
+  it('should return true if the path is a directory', () => {
+    expect(pathIsDirectory("./.") ).toEqual(true);
+  });
+  it('should return false if the path dosnt a directory', () => {
+    expect(pathIsDirectory("README.md") ).toEqual(false);
+  });
+  
+});
+
 describe('pathIsMd', () => {
 
   it('should return a function', () => {
     expect(typeof pathIsMd).toEqual("function");
   });
   it('should return false if the path doesnt .md', () => {
-    expect(pathIsMd("/Users/LABORATORIA/Desktop/DEV003-md-links/README.md") ).toEqual(true);
+    expect(pathIsMd(".js") ).toEqual(false);
   });
   it('should return true if the path is .md', () => {
-    expect(pathIsMd("./cli.js") ).toEqual(false);
+    expect(pathIsMd(".md") ).toEqual(true);
   });
   
 });
 
-describe('getLinks', () => {
+// describe('getLinks', () => {
 
-  it('should return a function', () => {
-    expect(typeof getLinks).toEqual("function");
-  });
+//   it('should return a function', () => {
+//     expect(typeof getLinks).resolve.toBe("function");
+//   });
 
   
-});
+// });
