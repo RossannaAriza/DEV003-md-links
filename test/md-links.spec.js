@@ -3,6 +3,10 @@ const { pathExist } = require('../api.js');
 const { pathAbsolut } = require('../api.js');
 const { newPathAbsolut } = require('../api.js');
 const { getExt } = require('../api.js');
+const { pathIsMd } = require('../api.js');
+const { getLinks } = require('../api.js');
+
+
 
 
 describe('mdLinks', () => {
@@ -64,5 +68,28 @@ describe('getExt', () => {
   it('should return the file format, in this case .js', () => {
     expect(getExt("./cli.js") ).toEqual(".js");
   });
+  
+});
+
+describe('pathIsMd', () => {
+
+  it('should return a function', () => {
+    expect(typeof pathIsMd).toEqual("function");
+  });
+  it('should return false if the path doesnt .md', () => {
+    expect(pathIsMd("/Users/LABORATORIA/Desktop/DEV003-md-links/README.md") ).toEqual(true);
+  });
+  it('should return true if the path is .md', () => {
+    expect(pathIsMd("./cli.js") ).toEqual(false);
+  });
+  
+});
+
+describe('getLinks', () => {
+
+  it('should return a function', () => {
+    expect(typeof getLinks).toEqual("function");
+  });
+
   
 });
