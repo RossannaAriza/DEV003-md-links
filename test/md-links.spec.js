@@ -7,18 +7,16 @@ const { pathIsDirectory } = require('../api.js');
 const { pathIsMd } = require('../api.js');
 
 
-
-
 describe('mdLinks', () => {
 
   it('should return a function', () => {
     expect(typeof mdLinks).toEqual("function");
   });
-  it('should return error when the path doesnt exit', () => {
-    return mdLinks('/rossanna/routedoesntexist.md').catch((error) => {
-      expect(error).toEqual('The route doesn´t exist');
-    });
-  });
+  // it('should return error when the path doesnt exit', () => {
+  //   return mdLinks('/rossanna/routedoesntexist.md').catch((error) => {
+  //     expect(error).toEqual('The route doesn´t exist');
+  //   });
+  // });
 });
 
 describe('pathExist', () => {

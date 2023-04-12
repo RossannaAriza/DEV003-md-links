@@ -1,10 +1,9 @@
-const { pathExist } = require('./api.js');
-const { pathAbsolut } = require('./api.js');
-const { newPathAbsolut } = require('./api.js');
-const { pathIsDirectory } = require('./api.js');
-const { pathIsMd } = require('./api.js');
-const { getExt } = require('./api.js');
-const { getLinks } = require('./api.js');
+const { pathExist, pathAbsolut, newPathAbsolut, validateLinks, getExt, pathIsMd, getLinks, pathIsDirectory } = require('./api.js');
+
+const ruta = "/Users/LABORATORIA/Desktop/DEV003-md-links/README.md";
+const rutaRelativa = "./README.md";
+const rutaDirectorio = "./";
+
 
 //Create an mdLinks function, it receives two parameters, the first is a "URL", and the second option can be "--stats, --validate or --stats --validate", the last being a boolean value.
 const mdLinks = (path, options) => {
@@ -14,32 +13,39 @@ const mdLinks = (path, options) => {
     if (pathExist(path) === true) {
       //validar si es una ruta es absoluta sino convertirla
       const pathAbsolute = "";
-      if(pathAbsolut(path) === true){
+      //console.log( `The path ${path} exist` );
+      if (pathAbsolut(path) === true) {
         pathAbsolute = path;
-      }else{
+        // console.log( `The path ${path} is absolute` );
+      } else {
         pathAbsolute = newPathAbsolut(path);
+        // console.log( `This is your path ${path} absolute: ${pathAbsolut}` );
       }
-      //La ruta es un directorio o archivo
-      if(pathIsDirectory(pathAbsolute) === true){
-        //si es directorio validar si existen archivos .md devolver un arreglo con los datos
-        //si es directorio validar si no existen archivos .md devolver un arreglo vacio y cancelar promesa
-      
-      }else {
-        //Validar si el archivo es .md un arreglo
-        if(pathIsMd(getExt(pathAbsolute)) === true){
-          console.log(getLinks(pathAbsolute));
-        }
+      //tomar base de que es un archivo
+      //Validar si el archivo es .md 
+      if (pathIsMd(getExt(pathAbsolute)) === true) {
+        //console.log( `The path ${path} is .md`);
+        getLinks(pathAbsolute).then((url) => {
+          if (!options.validate) {
+            resolve(url);
+          } else {
+            const answer = validateLinks(url);
+            resolve(answer);
+          }
+        })
+      } else {
+        reject("The files doesnt .md");
       }
-      
-      
-    }else {
-      //si no existe error
-      reject('The route doesn´t exist');
-    }
+  } else {
+    //si no existe path error
+    reject('The path doesn´t exist');
+  }
   });
 }
 
+mdLinks(ruta, {validate: true}).then((urlData) => (urlData))
+  .catch((error) => console.log(error));
 
 module.exports = {
-mdLinks
+  mdLinks
 };

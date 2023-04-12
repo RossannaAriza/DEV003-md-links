@@ -1,6 +1,7 @@
 const { rejects } = require('assert');
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 
 const ruta = "/Users/LABORATORIA/Desktop/DEV003-md-links/README.md";
 const rutaRelativa = "./README.md";
@@ -9,26 +10,18 @@ const rutaDirectorio = "./";
 
 //validar si el path existe
 const pathExist = (route) => fs.existsSync(route);
-console.log(pathExist(ruta));
 
 //validar si el path es absoluta
 const pathAbsolut = (route) => path.isAbsolute(route);
-console.log(pathAbsolut(ruta));
-console.log(pathAbsolut(rutaRelativa));
 
 //Convertir en ruta absoluta si una ruta es relativa
 const newPathAbsolut = (route) => path.resolve(route);
-console.log(newPathAbsolut(rutaRelativa));
 
 //validar si el path es un archivo
 const pathIsFile = (route) => fs.statSync(route).isFile();
-console.log(pathIsFile(ruta));
 
 // validar si es un directorio
-const pathIsDirectory = (route) => fs.lstatSync(route).isDirectory()
-console.log(pathIsDirectory(rutaDirectorio));
-console.log(pathIsDirectory(ruta));
-
+const pathIsDirectory = (route) => fs.lstatSync(route).isDirectory();
 
 //--------------------------------------------------------------
 //Leer un directorio y extraer archivos .md
@@ -55,19 +48,18 @@ console.log(pathIsDirectory(ruta));
 
 //Obtener el formato del archivo
 const getExt = (route) => path.extname(route);
-console.log(getExt(ruta));
-const extPathMd = getExt(ruta);
 
 //validar si es un archivo .md
 const pathIsMd = (extRoute) => extRoute === ".md";
-console.log(pathIsMd(extPathMd));
 
 //Extraer links de un archivo
 const getLinks = (route) => {
     return new Promise((resolve, rejects) =>{
         //leerlo y buscar links y extraer
         fs.readFile(route, "utf-8", (error, data) => {
-            if(data){
+            if(error){
+                rejects(`Error: ${error}`);
+            }else {
                 const link = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
                 let links = [];
                 let matchedLink
@@ -79,9 +71,6 @@ const getLinks = (route) => {
                 }
                 resolve(links);
                 console.log(links);
-            }else {
-                rejects(`Error: ${error}`);
-                console.log(`Error: ${error}`);
             }
         })  
     })
@@ -89,11 +78,49 @@ const getLinks = (route) => {
 console.log(getLinks(ruta));
 
 // valida links en array (muestra status), hacer peticiones (axios)
-// const validateLinks = (allURL) => {
+const validateLinks = (allURL) => {
 //retornar una promesa con unn arreglo de objeto para cada link
-//si es true href, text, file, status, ok
-//si es false href, text, file
-//}
+return Promise.all(allURL.map((url) => 
+    //ejecutar peticion HTTP
+    axios.get(url.href).then((response) => {
+        // manejar respuesta exitosa
+        //si es true href, text, file, status, ok
+       return [{
+        href: url.href,
+        text: url.text,
+        file: url.file,
+        status: response.status,
+        ok: response.statusText,
+    }]}).catch((error) => {
+        // manejar error
+        let errorStatus;
+        //si error responsive exite
+        if (error.response) {
+            errorStatus = error.response.status;
+        //si no recibio respuesta    
+        }else if (error.request) {
+            //error 400 servidor no puede satisfacer un requerimiento
+            errorStatus = error.request;
+        //    
+        }else {
+            //error 500 (Internal Server Error)
+            errorStatus = error.message;
+        }
+        return [{
+        //si es false href, text, file
+        //traer mensage FAIL si presenta error
+        href: url.href,
+        text: url.text,
+        file: url.file,
+        status: errorStatus,
+        ok: 'FAIL',
+        }]
+
+    }))
+)
+}
+
+
 
 module.exports = {
      pathExist,
@@ -101,6 +128,8 @@ module.exports = {
      newPathAbsolut,
      getExt,
      pathIsMd,
+     pathIsFile,
      pathIsDirectory,
-     getLinks
+     getLinks,
+     validateLinks
  };
