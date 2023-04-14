@@ -1,23 +1,4 @@
-const { mdLinks } = require('../index.js');
-const { pathExist } = require('../api.js');
-const { pathAbsolut } = require('../api.js');
-const { newPathAbsolut } = require('../api.js');
-const { getExt } = require('../api.js');
-const { pathIsDirectory } = require('../api.js');
-const { pathIsMd } = require('../api.js');
-
-
-describe('mdLinks', () => {
-
-  it('should return a function', () => {
-    expect(typeof mdLinks).toEqual("function");
-  });
-  // it('should return error when the path doesnt exit', () => {
-  //   return mdLinks('/rossanna/routedoesntexist.md').catch((error) => {
-  //     expect(error).toEqual('The route doesn´t exist');
-  //   });
-  // });
-});
+const { pathExist, pathAbsolut, newPathAbsolut, readFile, getExt, pathIsDirectory, pathIsMd, validateLinks } = require('../api.js');
 
 describe('pathExist', () => {
 
@@ -97,11 +78,29 @@ describe('pathIsMd', () => {
   
 });
 
+describe('readFile', () => {
+
+  it('should return a function', () => {
+    expect(typeof readFile).toEqual("function");
+  });
+  it('should return all information of the file', async () => {
+    const pathTest = await readFile("testFile\\ReadFileFunction\\readFileMD.md");
+    expect(pathTest).toEqual("it's just a test");
+  });  
+});
+
 // describe('getLinks', () => {
 
-//   it('should return a function', () => {
-//     expect(typeof getLinks).resolve.toBe("function");
+//   it('should return an array with links inside of the .md file', () => {
+//     return readFile("testFile\\linksTestGetLinks.md").then((url) => {
+//       expect(getLinks(url, "testFile\\linksTestGetLinks.md")).toEqual([
+//         {
+//           text: 'Markdown',
+//           href: 'https://es.wikipedia.org/wiki/Markdown',
+//           file: '\\Users\\LABORATORIA\\Desktop\\DEV003-md-links\\testFile\\linksTestGetLinks.md'
+//         }
+//       ]);
 //   });
-
-  
+//     })
 // });
+
