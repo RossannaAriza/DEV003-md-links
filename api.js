@@ -52,84 +52,88 @@ const getExt = (route) => path.extname(route);
 //validar si es un archivo .md
 const pathIsMd = (extRoute) => extRoute === ".md";
 
-//Extraer links de un archivo
-const getLinks = (route) => {
-    return new Promise((resolve, rejects) =>{
-        //leerlo y buscar links y extraer
+//leerlo y buscar links y extraer
+
+const readFile = (route) => {
+    return new Promise((resolve, rejects) => {
         fs.readFile(route, "utf-8", (error, data) => {
-            if(error){
+            if (error) {
                 rejects(`Error: ${error}`);
-            }else {
-                const link = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
-                let links = [];
-                let matchedLink
-                while ((matchedLink = link.exec(data)) !== null){
-                    const text = matchedLink[1];
-                    const href = matchedLink[2];
-                    const file = route;
-                    links.push({text, href, file});
-                }
-                resolve(links);
-                console.log(links);
+            } else {
+                resolve(data);
             }
-        })  
+        })
     })
 }
-console.log(getLinks(ruta));
 
-// valida links en array (muestra status), hacer peticiones (axios)
-const validateLinks = (allURL) => {
-//retornar una promesa con unn arreglo de objeto para cada link
-return Promise.all(allURL.map((url) => 
-    //ejecutar peticion HTTP
-    axios.get(url.href).then((response) => {
-        // manejar respuesta exitosa
-        //si es true href, text, file, status, ok
-       return [{
-        href: url.href,
-        text: url.text,
-        file: url.file,
-        status: response.status,
-        ok: response.statusText,
-    }]}).catch((error) => {
-        // manejar error
-        let errorStatus;
-        //si error responsive exite
-        if (error.response) {
-            errorStatus = error.response.status;
-        //si no recibio respuesta    
-        }else if (error.request) {
-            //error 400 servidor no puede satisfacer un requerimiento
-            errorStatus = error.request;
-        //    
-        }else {
-            //error 500 (Internal Server Error)
-            errorStatus = error.message;
-        }
-        return [{
-        //si es false href, text, file
-        //traer mensage FAIL si presenta error
-        href: url.href,
-        text: url.text,
-        file: url.file,
-        status: errorStatus,
-        ok: 'FAIL',
-        }]
-
-    }))
-)
+//Extraer links de un archivo
+const getLinks = (data, route) => {
+    const link = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    let links = [];
+    let matchedLink
+    while ((matchedLink = link.exec(data)) !== null) {
+        const text = matchedLink[1];
+        const href = matchedLink[2];
+        const file = route;
+        links.push({ text, href, file });
+    }
+    return links;
 }
 
+
+// valida links en array (muestra status), hacer peticiones (axios)
+const validateLinks = (allURL) =>
+    //retornar una promesa con unn arreglo de objeto para cada link
+    Promise.all(allURL.map((url) => 
+        //ejecutar peticion HTTP
+        axios.get(url.href).then((response) => ([{
+            // manejar respuesta exitosa
+            //si es true href, text, file, status, ok
+                href: url.href,
+                text: url.text,
+                file: url.file,
+                status: response.status,
+                ok: response.statusText,
+            }])).catch((error) => {
+            // manejar error
+            let errorStatus;
+            //si error responsive exite
+            if (error.response) {
+                errorStatus = error.response.status;
+                //si no recibio respuesta    
+            } else if (error.request) {
+                //error 400 servidor no puede satisfacer un requerimiento
+                errorStatus = error.request;
+                //    
+            } else {
+                //error 500 (Internal Server Error)
+                errorStatus = error.message;
+            }
+            return [{
+                //si es false href, text, file
+                //traer mensage FAIL si presenta error
+                href: url.href,
+                text: url.text,
+                file: url.file,
+                status: errorStatus,
+                ok: 'FAIL',
+            }];
+        })
+    ));
+
+// const datos = readFile(ruta).then((data) => getLinks(data, ruta));
+// validateLinks(datos).then((allurl) => console.log(allurl)).catch((error) => console.log(error));
 
 
 module.exports = {
-     pathExist,
-     pathAbsolut,
-     newPathAbsolut,
-     getExt,
-     pathIsMd,
-     pathIsFile,
-     pathIsDirectory,
-     getLinks,
-     validateLinks
- };
+    pathExist,
+    pathAbsolut,
+    newPathAbsolut,
+    getExt,
+    pathIsMd,
+    pathIsFile,
+    pathIsDirectory,
+    readFile,
+    getLinks,
+    validateLinks
+};
