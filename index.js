@@ -20,11 +20,10 @@ const mdLinks = (path, options) => {
       //Validar si el archivo es .md 
       if (pathIsMd(getExt(pathAbsolute)) === true) {
         readFile(pathAbsolute).then((data) =>{
-          const links = getLinks(data, pathAbsolute);
           if (options.validate) {
-            validateLinks(links).then((url) => resolve(url));
+            validateLinks(getLinks(data, pathAbsolute)).then((url) => resolve(url));
           } else {
-            resolve(links);
+            resolve(getLinks(data, pathAbsolute));
           }
         })
         } else {
@@ -37,10 +36,8 @@ const mdLinks = (path, options) => {
   });
 }
 
-mdLinks("/Users/LABORATORIA/Desktop/DEV003-md-links/README.md", {validate: true})
-.then((urlData) => console.log(urlData))
-.catch((error) => console.log(error));
-
+//mdLinks("/Users/LABORATORIA/Desktop/DEV003-md-links/README.md", {validate: true}).then((urlData) => console.log(urlData)).catch((error) => console.log(error));
+//mdLinks("/Users/LABORATORIA/Desktop/DEV003-md-links/README.md", {validate: false}).then((urlData) => console.log(urlData)).catch((error) => console.log(error));
 // mdLinks("/Users/LABORATORIA/Desktop/DEV003-md-links/hola.md").catch((error) => console.log(error));
 // mdLinks("/Users/LABORATORIA/Desktop/DEV003-md-links/index.js").catch((error) => console.log(error));
 

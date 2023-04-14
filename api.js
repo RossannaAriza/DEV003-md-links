@@ -80,33 +80,28 @@ const getLinks = (data, route) => {
     return links;
 }
 
-
-// valida links en array (muestra status), hacer peticiones (axios)
-const validateLinks = (allURL) =>
-    //retornar una promesa con unn arreglo de objeto para cada link
-    Promise.all(allURL.map((url) => 
+const validateLinks = (allURL) => {
+        //retornar una promesa con unn arreglo de objeto para cada link
+    return Promise.all(allURL.map((url) =>
         //ejecutar peticion HTTP
         axios.get(url.href).then((response) => ([{
             // manejar respuesta exitosa
             //si es true href, text, file, status, ok
-                href: url.href,
-                text: url.text,
-                file: url.file,
-                status: response.status,
-                ok: response.statusText,
-            }])).catch((error) => {
+            href: url.href,
+            text: url.text,
+            file: url.file,
+            status: response.status,
+            ok: response.statusText,
+        }])).catch((error) => {
             // manejar error
             let errorStatus;
             //si error responsive exite
             if (error.response) {
                 errorStatus = error.response.status;
-                //si no recibio respuesta    
+                //si no recibio respuesta
             } else if (error.request) {
-                //error 400 servidor no puede satisfacer un requerimiento
                 errorStatus = error.request;
-                //    
             } else {
-                //error 500 (Internal Server Error)
                 errorStatus = error.message;
             }
             return [{
@@ -120,9 +115,7 @@ const validateLinks = (allURL) =>
             }];
         })
     ));
-
-// const datos = readFile(ruta).then((data) => getLinks(data, ruta));
-// validateLinks(datos).then((allurl) => console.log(allurl)).catch((error) => console.log(error));
+};
 
 
 module.exports = {
